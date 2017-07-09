@@ -99,8 +99,32 @@ public class XirrTest {
                 new Transaction(-1000, "2016-04-17"),
                 new Transaction( 5050, "2016-08-24")
             ).xirr();
-        System.out.println(rate);
         assertEquals(0.2504234710540838, rate, TOLERANCE);
+    }
+
+    @Test
+    public void xirr_issue_from_node_js_version() {
+        double rate = new Xirr(
+                new Transaction(-10000, "2000-05-24"),
+                new Transaction(3027.25, "2000-06-05"),
+                new Transaction(630.68, "2001-04-09"),
+                new Transaction(2018.2, "2004-02-24"),
+                new Transaction(1513.62, "2005-03-18"),
+                new Transaction(1765.89, "2006-02-15"),
+                new Transaction(4036.33, "2007-01-10"),
+                new Transaction(4036.33, "2007-11-14"),
+                new Transaction(1513.62, "2008-12-17"),
+                new Transaction(1513.62, "2010-01-15"),
+                new Transaction(2018.16, "2011-01-14"),
+                new Transaction(1513.62, "2012-02-03"),
+                new Transaction(1009.08, "2013-01-18"),
+                new Transaction(1513.62, "2014-01-24"),
+                new Transaction(1513.62, "2015-01-30"),
+                new Transaction(1765.89, "2016-01-22"),
+                new Transaction(1765.89, "2017-01-20"),
+                new Transaction(22421.55, "2017-06-05")
+            ).xirr();
+        assertEquals(0.2126861, rate, TOLERANCE);
     }
 
     @Test(expected = IllegalArgumentException.class)

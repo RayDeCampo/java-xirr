@@ -98,10 +98,12 @@ public class Xirr {
      * @throws IllegalArgumentException if the Newton-Raphson method fails to converge in the
      */
     public double xirr() {
+        final double years = DAYS.between(details.start, details.end) / DAYS_IN_YEAR;
+        final double guess = (details.total / details.deposits) / years;
         return NewtonRaphson.builder()
             .withFunction(this::presentValue)
             .withDerivative(this::derivative)
-            .findRoot(Math.signum(details.total)/100);
+            .findRoot(guess);
     }
 
     /**

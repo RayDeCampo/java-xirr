@@ -22,6 +22,7 @@ class XirrDetails {
     double minAmount = Double.POSITIVE_INFINITY;
     double maxAmount = Double.NEGATIVE_INFINITY;
     double total;
+    double deposits;
 
     public void accumulate(final Transaction tx) {
         start = start != null && start.isBefore(tx.when) ? start : tx.when;
@@ -29,6 +30,9 @@ class XirrDetails {
         minAmount = Math.min(minAmount, tx.amount);
         maxAmount = Math.max(maxAmount, tx.amount);
         total += tx.amount;
+        if (tx.amount < 0) {
+            deposits -= tx.amount;
+        }
     }
 
     public XirrDetails combine(final XirrDetails other) {
