@@ -21,7 +21,7 @@ import java.util.function.DoubleUnaryOperator;
  */
 public class NewtonRaphson {
     /** Default tolerance. */
-    public static final double TOLERANCE = 0.000_000_1;
+    public static final double TOLERANCE = 0.15;
 
     /**
      * Convenience method for getting an instance of a {@link Builder}.
