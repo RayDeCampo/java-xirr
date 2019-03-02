@@ -127,6 +127,23 @@ public class XirrTest {
         assertEquals(0.2126861, rate, TOLERANCE);
     }
 
+    @Test
+    public void xirr_issue5() {
+        double rate = new Xirr(
+            new Transaction(-2610, "2001-06-22"),
+            new Transaction(-2589, "2001-07-03"),
+            new Transaction(-5110, "2001-07-05"),
+            new Transaction(-2550, "2001-07-06"),
+            new Transaction(-5086, "2001-07-09"),
+            new Transaction(-2561, "2001-07-10"),
+            new Transaction(-5040, "2001-07-12"),
+            new Transaction(-2552, "2001-07-13"),
+            new Transaction(-2530, "2001-07-16"),
+            new Transaction(29520, "2001-07-17")
+        ).xirr();
+        assertEquals(-0.7640294, rate, TOLERANCE);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void xirr_no_transactions() {
         // throws exception when no transactions are passed
