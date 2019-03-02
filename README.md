@@ -29,3 +29,17 @@ To compute the irregular rate of return, you must find the constant rate of retu
 To find the zero of a function, we use the Newton-Raphson method as implemented in the NewtonRaphson class.  To use Newton's method, we need the derivative of the present value with respect to `r`. Fortunately this is easily determined using the power rule.  The derivative is the sum of the terms <code>AY(1+r)<sup>Y-1</sup></code> for which `Y` is not zero.
 
 I had a very elegant proof of the above but unfortunately the margin is too small to contain it.
+
+# Maven
+
+The library is available in the Maven Central repository, use the following dependency in your pom.xml:
+
+```
+<dependency>
+  <groupId>org.decampo</groupId>
+  <artifactId>xirr</artifactId>
+  <version>0.1</version>
+</dependency>
+```
+
+You may want to verify that the version is the latest by checking https://search.maven.org/artifact/org.decampo/xirr/.
