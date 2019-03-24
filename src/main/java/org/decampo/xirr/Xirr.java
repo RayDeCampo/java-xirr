@@ -99,6 +99,9 @@ public class Xirr {
      */
     public double xirr() {
         final double years = DAYS.between(details.start, details.end) / DAYS_IN_YEAR;
+        if (details.maxAmount == 0) {
+            return -1; // Total loss
+        }
         final double guess = (details.total / details.deposits) / years;
         return NewtonRaphson.builder()
             .withFunction(this::presentValue)

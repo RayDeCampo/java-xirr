@@ -79,7 +79,7 @@ public class XirrTest {
     }
 
     @Test
-    public void xirr_total_loss() {
+    public void xirr_total_loss_one_year() {
         // computes a rate of return of -100% on a total loss
         final double xirr = new Xirr(Arrays.asList(
                 new Transaction(-1000, "2010-01-01"),
@@ -88,6 +88,26 @@ public class XirrTest {
         assertEquals(-1.00, xirr, TOLERANCE);
     }
     
+    @Test
+    public void xirr_total_loss_two_years() {
+        // computes a rate of return of -100% on a total loss
+        final double xirr = new Xirr(Arrays.asList(
+                new Transaction(-1000, "2010-01-01"),
+                new Transaction(    0, "2012-01-01")
+            )).xirr();
+        assertEquals(-1.00, xirr, TOLERANCE);
+    }
+
+    @Test
+    public void xirr_total_loss_half_year() {
+        // computes a rate of return of -100% on a total loss
+        final double xirr = new Xirr(Arrays.asList(
+                new Transaction(-1000, "2010-01-01"),
+                new Transaction(    0, "2010-07-01")
+            )).xirr();
+        assertEquals(-1.00, xirr, TOLERANCE);
+    }
+
     @Test
     public void xirr_readme_example() {
         double rate = new Xirr(
