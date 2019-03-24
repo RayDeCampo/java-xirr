@@ -140,12 +140,15 @@ public class Xirr {
                 // E.g. if rate=-1.5 and years=.5, it would be (-.5)^.5,
                 // i.e. the square root of negative one half.
 
-                // Instead we will consider it to be a total loss, plus an
-                // additional loss calculated from the amount the absolute value
-                // of the rate exceeds 100%.  So if the rate were -1.5 (-150%),
-                // the additional loss accumulates at 50%.
+                // Ensure the values are always negative so there can never
+                // be a zero (as long as some amount is non-zero).
+                // This formula also ensures that the derivative is positive
+                // (when rate < -1) so that Newton's method is encouraged to
+                // move the candidate values towards the proper range
 
-                return -amount * Math.pow(-1 - rate, years);
+                return -Math.abs(amount) * Math.pow(-1 - rate, years);
+            } else if (years == 0) {
+                return amount; // Resolve 0^0 as 0
             } else {
                 return 0;
             }
@@ -162,7 +165,7 @@ public class Xirr {
             } else if (-1 < rate) {
                 return amount * years * Math.pow(1 + rate, years - 1);
             } else if (rate < -1) {
-                return -amount * years * Math.pow(-1 - rate, years - 1);
+                return Math.abs(amount) * years * Math.pow(-1 - rate, years - 1);
             } else {
                 return 0;
             }
