@@ -11,12 +11,12 @@ package org.decampo.xirr;
 public class ZeroValuedDerivativeException extends ArithmeticException {
 
     private final double initialGuess;
-    private final int iteration;
+    private final long iteration;
     private final double candidate;
     private final double value;
 
     public ZeroValuedDerivativeException(
-        double initialGuess, int iteration, double candidate, double value) {
+        double initialGuess, long iteration, double candidate, double value) {
 
         super("Newton-Raphson failed due to zero-valued derivative.");
         this.initialGuess = initialGuess;
@@ -39,7 +39,7 @@ public class ZeroValuedDerivativeException extends ArithmeticException {
      * @return the number of iterations passed when encountering the zero-valued
      * derivative
      */
-    public int getIteration() {
+    public long getIteration() {
         return iteration;
     }
 

@@ -86,7 +86,7 @@ public class NewtonRaphson {
      */
     public double inverse(final double target, final double guess) {
         double candidate = guess;
-        for (int i = 0; i < iterations; i++) {
+        for (long i = 0; i < iterations; i++) {
             double value = func.applyAsDouble(candidate) - target;
             if (Math.abs(value) < tolerance) {
                 return candidate;
