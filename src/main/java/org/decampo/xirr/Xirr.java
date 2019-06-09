@@ -16,13 +16,53 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * When creating the list of {@link Transaction} instances to feed Xirr, be
  * sure to include one transaction representing the present value of the account
  * now, as if you had cashed out the investment.
+ * <p>
+ * Example usage:
+ * <code>
+ *     double rate = new Xirr(
+ *             new Transaction(-1000, "2016-01-15"),
+ *             new Transaction(-2500, "2016-02-08"),
+ *             new Transaction(-1000, "2016-04-17"),
+ *             new Transaction( 5050, "2016-08-24")
+ *         ).xirr();
+ * </code>
+ * <p>
+ * Example using the builder to gain more control:
+ * <code>
+ *     double rate = Xirr.builder()
+ *         .withNewtonRaphsonBuilder(
+ *             NewtonRaphson.builder()
+ *                 .withIterations(1000)
+ *                 .withTolerance(0.0001))
+ *         .withGuess(.20)
+ *         .withTransactions(
+ *             new Transaction(-1000, "2016-01-15"),
+ *             new Transaction(-2500, "2016-02-08"),
+ *             new Transaction(-1000, "2016-04-17"),
+ *             new Transaction( 5050, "2016-08-24")
+ *         ).xirr();
+ * </code>
+ * <p>
+ * This class is not thread-safe and is designed for each instance to be used
+ * once.
  */
 public class Xirr {
 
     private static final double DAYS_IN_YEAR = 365;
 
+    /**
+     * Convenience method for getting an instance of a {@link Builder}.
+     * @return new Builder
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
     private final List<Investment> investments;
     private final XirrDetails details;
+
+    private NewtonRaphson.Builder builder = null;
+    private Double guess = null;
 
     /**
      * Construct an Xirr instance for the given transactions.
@@ -45,6 +85,10 @@ public class Xirr {
      * @throws IllegalArgumentException if all the transactions non-negative (withdrawals)
      */
     public Xirr(Collection<Transaction> txs) {
+        this(txs, null, null);
+    }
+
+    private Xirr(Collection<Transaction> txs, NewtonRaphson.Builder builder, Double guess) {
         if (txs.size() < 2) {
             throw new IllegalArgumentException(
                 "Must have at least two transactions");
@@ -54,6 +98,9 @@ public class Xirr {
         investments = txs.stream()
             .map(this::createInvestment)
             .collect(Collectors.toList());
+
+        this.builder = builder != null ? builder : NewtonRaphson.builder();
+        this.guess = guess;
     }
 
     private Investment createInvestment(Transaction tx) {
@@ -102,9 +149,8 @@ public class Xirr {
         if (details.maxAmount == 0) {
             return -1; // Total loss
         }
-        final double guess = (details.total / details.deposits) / years;
-        return NewtonRaphson.builder()
-            .withFunction(this::presentValue)
+        guess = guess != null ? guess : (details.total / details.deposits) / years;
+        return builder.withFunction(this::presentValue)
             .withDerivative(this::derivative)
             .findRoot(guess);
     }
@@ -171,5 +217,50 @@ public class Xirr {
             }
         }
     }
-    
+
+    /**
+     * Builder for {@link Xirr} instances.
+     */
+    public static class Builder {
+        private Collection<Transaction> transactions = null;
+        private NewtonRaphson.Builder builder = null;
+        private Double guess = null;
+
+        public Builder() {
+        }
+
+        public Builder withTransactions(Transaction... txs) {
+            return withTransactions(Arrays.asList(txs));
+        }
+
+        public Builder withTransactions(Collection<Transaction> txs) {
+            this.transactions = txs;
+            return this;
+        }
+
+        public Builder withNewtonRaphsonBuilder(NewtonRaphson.Builder builder) {
+            this.builder = builder;
+            return this;
+        }
+
+        public Builder withGuess(double guess) {
+            this.guess = guess;
+            return this;
+        }
+
+        public Xirr build() {
+            return new Xirr(transactions, builder, guess);
+        }
+
+        /**
+         * Convenience method for building the Xirr instance and invoking
+         * {@link Xirr#xirr()}.  See the documentation for that method for
+         * details.
+         * @return the irregular rate of return of the transactions
+         */
+        public double xirr() {
+            return build().xirr();
+        }
+    }
+
 }
