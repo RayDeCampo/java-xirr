@@ -142,7 +142,7 @@ public class Xirr {
      * instance of Xirr.
      * @return the irregular rate of return of the transactions
      * @throws ZeroValuedDerivativeException if the derivative is 0 while executing the Newton-Raphson method
-     * @throws IllegalArgumentException if the Newton-Raphson method fails to converge in the
+     * @throws NonconvergenceException if the Newton-Raphson method fails to converge in the
      */
     public double xirr() {
         final double years = DAYS.between(details.start, details.end) / DAYS_IN_YEAR;

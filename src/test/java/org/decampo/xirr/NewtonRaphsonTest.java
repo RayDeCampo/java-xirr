@@ -73,7 +73,7 @@ public class NewtonRaphsonTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NonconvergenceException.class)
     public void failToConverge_iterations() throws Exception {
         NewtonRaphson nr = NewtonRaphson.builder()
             .withFunction(x -> x * x)
@@ -81,6 +81,21 @@ public class NewtonRaphsonTest {
             .build();
         nr.findRoot(Integer.MAX_VALUE);
         fail("Expected non-convergence");
+    }
+
+    @Test
+    public void failToConverge_iterations_verifyDetails() throws Exception {
+        try {
+            NewtonRaphson nr = NewtonRaphson.builder()
+                .withFunction(x -> x * x)
+                .withDerivative(x -> 1) // Wrong on purpose
+                .build();
+            nr.findRoot(Integer.MAX_VALUE);
+            fail("Expected non-convergence");
+        } catch (NonconvergenceException ne) {
+            assertEquals(Integer.MAX_VALUE, ne.getInitialGuess(), TOLERANCE);
+            assertEquals(10_000L, ne.getIterations());
+        }
     }
 
     @Test

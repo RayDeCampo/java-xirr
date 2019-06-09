@@ -81,8 +81,8 @@ public class NewtonRaphson {
      * given tolerance
      * @throws ZeroValuedDerivativeException if the derivative is 0 while
      *                                       executing the Newton-Raphson method
-     * @throws IllegalArgumentException if the method fails to converge in the
-     *                                  given number of iterations
+     * @throws NonconvergenceException if the method fails to converge in the
+     *                                 given number of iterations
      */
     public double inverse(final double target, final double guess) {
         double candidate = guess;
@@ -99,8 +99,7 @@ public class NewtonRaphson {
                 candidate -= value / slope;
             }
         }
-        throw new IllegalArgumentException("Newton-Raphson failed to converge "
-            + "within " + iterations + " iterations.");
+        throw new NonconvergenceException(guess, iterations);
     }
 
     /**
