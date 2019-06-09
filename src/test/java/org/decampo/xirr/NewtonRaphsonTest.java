@@ -43,7 +43,7 @@ public class NewtonRaphsonTest {
         assertEquals(-3, nr.findRoot(.49), TOLERANCE);
     }
 
-    @Test(expected = ArithmeticException.class)
+    @Test(expected = ZeroValuedDerivativeException.class)
     public void failToConverge() throws Exception {
         NewtonRaphson nr = NewtonRaphson.builder()
             .withFunction(x -> (x - 4) * (x + 3))
@@ -51,7 +51,26 @@ public class NewtonRaphsonTest {
             .build();
         // Inflection point when derivative is zero => x = 1/2
         nr.findRoot(.5);
-        fail("Expected non-convergence");
+        fail("Expected zero-valued derivative");
+    }
+
+    @Test()
+    public void failToConverge_verifyDetails() throws Exception {
+        try {
+            // Use nonsense functions designed to cause a zero derivative
+            // after one iteration
+            NewtonRaphson nr = NewtonRaphson.builder()
+                .withFunction(x -> 2)
+                .withDerivative(x -> x > 0 ? .25 : 0)
+                .build();
+            nr.findRoot(3);
+            fail("Expected non-convergence");
+        } catch (ZeroValuedDerivativeException zvde) {
+            assertEquals(3, zvde.getInitialGuess(), TOLERANCE);
+            assertEquals(1, zvde.getIteration());
+            assertEquals(-5, zvde.getCandidate(), TOLERANCE);
+            assertEquals(2, zvde.getValue(), TOLERANCE);
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)

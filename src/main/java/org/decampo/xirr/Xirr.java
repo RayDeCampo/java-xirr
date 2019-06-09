@@ -141,7 +141,7 @@ public class Xirr {
      * Calculates the irregular rate of return of the transactions for this
      * instance of Xirr.
      * @return the irregular rate of return of the transactions
-     * @throws ArithmeticException if the derivative is 0 while executing the Newton-Raphson method
+     * @throws ZeroValuedDerivativeException if the derivative is 0 while executing the Newton-Raphson method
      * @throws IllegalArgumentException if the Newton-Raphson method fails to converge in the
      */
     public double xirr() {
