@@ -44,7 +44,7 @@ public class ZeroValuedDerivativeException extends ArithmeticException {
     }
 
     /**
-     *  Get the candidate input which resulted in the zero-valued derivative.
+     * Get the candidate input which resulted in the zero-valued derivative.
      * @return the input which resulted in the zero-valued derivative
      */
     public double getCandidate() {
@@ -54,7 +54,8 @@ public class ZeroValuedDerivativeException extends ArithmeticException {
     /**
      * The value of the function at the candidate input which resulted in the
      * zero-valued derivative.
-     * @return
+     * @return value of the function at the candidate input which resulted in
+     * the zero-valued derivative
      */
     public double getValue() {
         return value;
