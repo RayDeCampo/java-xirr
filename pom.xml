@@ -53,6 +53,7 @@ Use the 'release' profile to sign the jar and deploy to maven central:
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>2.28.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
