@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import static org.decampo.xirr.NewtonRaphson.TOLERANCE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class NewtonRaphsonTest {
@@ -54,7 +56,7 @@ public class NewtonRaphsonTest {
         fail("Expected zero-valued derivative");
     }
 
-    @Test()
+    @Test
     public void failToConverge_verifyDetails() throws Exception {
         try {
             // Use nonsense functions designed to cause a zero derivative
@@ -67,7 +69,7 @@ public class NewtonRaphsonTest {
             fail("Expected non-convergence");
         } catch (ZeroValuedDerivativeException zvde) {
             assertEquals(3, zvde.getInitialGuess(), TOLERANCE);
-            assertEquals(1, zvde.getIteration());
+            assertEquals(2, zvde.getIteration());
             assertEquals(-5, zvde.getCandidate(), TOLERANCE);
             assertEquals(2, zvde.getValue(), TOLERANCE);
         }
@@ -76,10 +78,10 @@ public class NewtonRaphsonTest {
     @Test(expected = NonconvergenceException.class)
     public void failToConverge_iterations() throws Exception {
         NewtonRaphson nr = NewtonRaphson.builder()
-            .withFunction(x -> x * x)
+            .withFunction(x -> 2 * Math.signum(x))
             .withDerivative(x -> 1) // Wrong on purpose
             .build();
-        nr.findRoot(Integer.MAX_VALUE);
+        nr.findRoot(1);
         fail("Expected non-convergence");
     }
 
@@ -87,16 +89,70 @@ public class NewtonRaphsonTest {
     public void failToConverge_iterations_verifyDetails() throws Exception {
         try {
             NewtonRaphson nr = NewtonRaphson.builder()
-                .withFunction(x -> x * x)
+                .withFunction(x -> 2 * Math.signum(x))
                 .withDerivative(x -> 1) // Wrong on purpose
                 .build();
-            nr.findRoot(Integer.MAX_VALUE);
+            nr.findRoot(1);
             fail("Expected non-convergence");
         } catch (NonconvergenceException ne) {
-            assertEquals(Integer.MAX_VALUE, ne.getInitialGuess(), TOLERANCE);
+            assertEquals(1, ne.getInitialGuess(), TOLERANCE);
             assertEquals(10_000L, ne.getIterations());
         }
     }
+
+    @Test
+    public void failToConverge_badCandidate_verifyDetails() throws Exception {
+        try {
+            NewtonRaphson nr = NewtonRaphson.builder()
+                .withFunction(x -> Double.MAX_VALUE)
+                .withDerivative(x -> Double.MIN_NORMAL)
+                .build();
+            nr.findRoot(3);
+            fail("Expected non-convergence");
+        } catch (OverflowException ne) {
+            System.out.println(ne);
+            assertEquals(3, ne.getInitialGuess(), TOLERANCE);
+            assertEquals(1, ne.getIteration());
+            assertEquals(Double.NEGATIVE_INFINITY, ne.getCandidate(), TOLERANCE);
+        }
+    }
+
+    @Test
+    public void failToConverge_nanFunctionValue_verifyDetails() throws Exception {
+        try {
+            NewtonRaphson nr = NewtonRaphson.builder()
+                .withFunction(x -> Double.NaN)
+                .withDerivative(x -> 1)
+                .build();
+            nr.findRoot(3);
+            fail("Expected non-convergence");
+        } catch (OverflowException ne) {
+            assertEquals(3, ne.getInitialGuess(), TOLERANCE);
+            assertEquals(1, ne.getIteration());
+            assertEquals(3, ne.getCandidate(), TOLERANCE);
+            assertTrue(Double.isNaN(ne.getValue()));
+            assertNull(ne.getDerivativeValue());
+        }
+    }
+
+    @Test
+    public void failToConverge_nanDerivative_verifyDetails() throws Exception {
+        try {
+            NewtonRaphson nr = NewtonRaphson.builder()
+                .withFunction(x -> 2)
+                .withDerivative(x -> Double.NaN)
+                .build();
+            nr.findRoot(3);
+            fail("Expected non-convergence");
+        } catch (OverflowException ne) {
+            assertEquals(3, ne.getInitialGuess(), TOLERANCE);
+            assertEquals(1, ne.getIteration());
+            assertEquals(3, ne.getCandidate(), TOLERANCE);
+            assertEquals(2, ne.getValue(), TOLERANCE);
+            assertTrue(Double.isNaN(ne.getDerivativeValue()));
+        }
+    }
+
 
     @Test
     public void tolerance() throws Exception {

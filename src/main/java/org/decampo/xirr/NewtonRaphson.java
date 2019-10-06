@@ -81,25 +81,12 @@ public class NewtonRaphson {
      * given tolerance
      * @throws ZeroValuedDerivativeException if the derivative is 0 while
      *                                       executing the Newton-Raphson method
+     * @throws OverflowException when a value involved is infinite or NaN
      * @throws NonconvergenceException if the method fails to converge in the
      *                                 given number of iterations
      */
     public double inverse(final double target, final double guess) {
-        double candidate = guess;
-        for (long i = 0; i < iterations; i++) {
-            double value = func.applyAsDouble(candidate) - target;
-            if (Math.abs(value) < tolerance) {
-                return candidate;
-            } else {
-                double slope = derivative.applyAsDouble(candidate);
-                if (slope == 0.0) {
-                    throw new ZeroValuedDerivativeException(
-                        guess, i, candidate, value);
-                }
-                candidate -= value / slope;
-            }
-        }
-        throw new NonconvergenceException(guess, iterations);
+        return new Calculation().solve(guess, target);
     }
 
     /**
@@ -147,6 +134,86 @@ public class NewtonRaphson {
          */
         public double findRoot(double guess) {
             return build().findRoot(guess);
+        }
+    }
+
+    class Calculation {
+        private double guess;
+        private long i; // persistent loop counter
+        private double candidate;
+        private double value;
+        private Double derivativeValue;
+
+        public double getGuess() {
+            return guess;
+        }
+
+        public void setGuess(double guess) {
+            this.guess = guess;
+        }
+
+        public long getIteration() {
+            return i + 1;
+        }
+
+        public double getCandidate() {
+            return candidate;
+        }
+
+        public void setCandidate(double candidate) {
+            this.candidate = candidate;
+            if (!Double.isFinite(candidate)) {
+                throw new OverflowException("Candidate overflow", this);
+            }
+        }
+
+        public double getValue() {
+            return value;
+        }
+
+        public void setValue(double value) {
+            this.value = value;
+            if (!Double.isFinite(value)) {
+                throw new OverflowException("Function value overflow", this);
+            }
+        }
+
+        public Double getDerivativeValue() {
+            return derivativeValue;
+        }
+
+        public void setDerivativeValue(Double derivativeValue) {
+            this.derivativeValue = derivativeValue;
+            if (!Double.isFinite(derivativeValue)) {
+                throw new OverflowException("Derivative value overflow", this);
+            } else if (derivativeValue == 0.0) {
+                throw new ZeroValuedDerivativeException(this);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return '{'
+                + "guess=" + guess
+                + ", iteration="+ i
+                + ", candidate=" + candidate
+                + ", value=" + value
+                + ", derivative=" + derivativeValue + '}';
+        }
+
+        double solve(double guess, double target) {
+            setGuess(guess);
+            setCandidate(guess);
+            for (i = 0; i < iterations; i++) {
+                setValue(func.applyAsDouble(candidate) - target);
+                if (Math.abs(value) < tolerance) {
+                    return candidate;
+                } else {
+                    setDerivativeValue(derivative.applyAsDouble(candidate));
+                    setCandidate(candidate - value / derivativeValue);
+                }
+            }
+            throw new NonconvergenceException(guess, iterations);
         }
     }
 }
