@@ -7,7 +7,7 @@ Use the 'release' profile to sign the jar and deploy to maven central:
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.decampo</groupId>
     <artifactId>xirr</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
 
     <name>xirr</name>
