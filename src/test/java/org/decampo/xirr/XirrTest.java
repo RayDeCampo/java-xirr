@@ -9,6 +9,7 @@ import static org.decampo.xirr.NewtonRaphson.TOLERANCE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+@SuppressWarnings("RedundantThrows")
 public class XirrTest {
 
     @Test
@@ -179,6 +180,35 @@ public class XirrTest {
         assertEquals(-0.8353404, rate, TOLERANCE);
     }
 
+    @Test
+    public void xirr_implementing_issue_23_is_impossible() {
+        double xirr = new Xirr(
+                new Transaction(-2000, "2010-01-01"),
+                new Transaction( 2508.80, "2012-01-01")
+            ).xirr();
+        assertEquals(0.12, xirr, TOLERANCE);
+
+        xirr = new Xirr(
+                new Transaction(-1000, "2010-01-01"),
+                new Transaction(-1120, "2011-01-01"),
+                new Transaction( 2508.8, "2012-01-01")
+            ).xirr();
+        assertEquals(0.12, xirr, TOLERANCE);
+
+        xirr = new Xirr(
+                new Transaction(-2000, "2010-01-01"),
+                new Transaction( 2508.80, "2013-01-01")
+            ).xirr();
+        assertEquals(0.0784054, xirr, TOLERANCE);
+
+        xirr = new Xirr(
+                new Transaction(-1000, "2010-01-01"),
+                new Transaction(-1120, "2011-01-01"),
+                new Transaction( 2508.8, "2013-01-01")
+            ).xirr();
+        assertEquals(0.07017195, xirr, TOLERANCE);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void xirr_no_transactions() {
         // throws exception when no transactions are passed
@@ -208,7 +238,6 @@ public class XirrTest {
     @Test(expected = IllegalArgumentException.class)
     public void xirr_all_negative() throws Exception {
         // throws an exception when all transactions are negative
-        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         new Xirr(
                 new Transaction(-1000, "2010-01-01"),
                 new Transaction(-1000, "2010-05-01"),
@@ -220,7 +249,6 @@ public class XirrTest {
     @Test(expected = IllegalArgumentException.class)
     public void xirr_all_nonnegative() throws Exception {
         // throws an exception when all transactions are nonnegative
-        final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         new Xirr(
                 new Transaction(1000, "2010-01-01"),
                 new Transaction(1000, "2010-05-01"),
