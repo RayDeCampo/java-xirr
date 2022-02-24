@@ -15,10 +15,6 @@ import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/**
- *
- * @author ray
- */
 public class XirrBuilderTest {
 
     @Test

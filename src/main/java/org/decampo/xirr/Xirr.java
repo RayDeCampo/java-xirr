@@ -61,8 +61,8 @@ public class Xirr {
     private final List<Investment> investments;
     private final XirrDetails details;
 
-    private NewtonRaphson.Builder builder = null;
-    private Double guess = null;
+    private final NewtonRaphson.Builder builder;
+    private Double guess;
 
     /**
      * Construct an Xirr instance for the given transactions.

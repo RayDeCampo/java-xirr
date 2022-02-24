@@ -9,7 +9,6 @@ import static org.decampo.xirr.NewtonRaphson.TOLERANCE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-@SuppressWarnings("RedundantThrows")
 public class XirrTest {
 
     @Test
