@@ -41,12 +41,13 @@ class XirrDetails {
         minAmount = Math.min(minAmount, other.minAmount);
         maxAmount = Math.max(maxAmount, other.maxAmount);
         total += other.total;
+        deposits += other.deposits;
         return this;
     }
 
     public void validate() {
         if (start == null) {
-            throw new IllegalArgumentException("No transactions to anaylze");
+            throw new IllegalArgumentException("No transactions to analyze");
         }
 
         if (start.equals(end)) {
@@ -55,7 +56,7 @@ class XirrDetails {
         }
         if (minAmount >= 0) {
             throw new IllegalArgumentException(
-                "Transactions must not all be nonnegative.");
+                "Transactions must not all be non-negative.");
         }
         if (maxAmount < 0) {
             throw new IllegalArgumentException(
