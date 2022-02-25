@@ -11,7 +11,7 @@ Then move to production:
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.decampo</groupId>
     <artifactId>xirr</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
     <packaging>jar</packaging>
 
     <name>xirr</name>
