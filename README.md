@@ -38,7 +38,7 @@ The library is available in the Maven Central repository, use the following depe
 <dependency>
   <groupId>org.decampo</groupId>
   <artifactId>xirr</artifactId>
-  <version>1.1</version>
+  <version>1.2</version>
 </dependency>
 ```
 
