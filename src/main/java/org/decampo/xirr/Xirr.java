@@ -17,6 +17,9 @@ import static java.time.temporal.ChronoUnit.DAYS;
  * sure to include one transaction representing the present value of the account
  * now, as if you had cashed out the investment.
  * <p>
+ * The default number of days per year used for calculation is 365 (ACT/365), but it is possible to override this at the point of
+ * construction, or with the withDaysInYear builder option
+ * <p>
  * Example usage:
  * <code>
  *     double rate = new Xirr(
@@ -48,7 +51,8 @@ import static java.time.temporal.ChronoUnit.DAYS;
  */
 public class Xirr {
 
-    private static final double DAYS_IN_YEAR = 365;
+    private static final int DEFAULT_DAYS_IN_YEAR = 365;
+    private final double daysInYear;
 
     /**
      * Convenience method for getting an instance of a {@link Builder}.
@@ -77,6 +81,18 @@ public class Xirr {
     }
 
     /**
+     * Construct an Xirr instance for the given transactions and a user specified number of days in year.
+     * @param tx the transactions
+     * @param daysInYear for use in calculations
+     * @throws IllegalArgumentException if there are fewer than 2 transactions
+     * @throws IllegalArgumentException if all the transactions are on the same date
+     * @throws IllegalArgumentException if all the transactions negative (deposits)
+     * @throws IllegalArgumentException if all the transactions non-negative (withdrawals)
+     */
+    public Xirr(int daysInYear, Transaction... tx) {
+        this(Arrays.asList(tx), daysInYear);
+    }
+    /**
      * Construct an Xirr instance for the given transactions.
      * @param txs the transactions
      * @throws IllegalArgumentException if there are fewer than 2 transactions
@@ -85,14 +101,31 @@ public class Xirr {
      * @throws IllegalArgumentException if all the transactions non-negative (withdrawals)
      */
     public Xirr(Collection<Transaction> txs) {
-        this(txs, null, null);
+        this(txs, null, null, DEFAULT_DAYS_IN_YEAR);
     }
 
-    private Xirr(Collection<Transaction> txs, NewtonRaphson.Builder builder, Double guess) {
+    /**
+     * Construct an Xirr instance for the given transactions.
+     * @param txs the transactions
+     * @daysInYear for use in calculations
+     * @throws IllegalArgumentException if there are fewer than 2 transactions
+     * @throws IllegalArgumentException if all the transactions are on the same date
+     * @throws IllegalArgumentException if all the transactions negative (deposits)
+     * @throws IllegalArgumentException if all the transactions non-negative (withdrawals)
+     */
+    public Xirr(Collection<Transaction> txs, int daysInYear) {
+        this(txs, null, null, daysInYear);
+    }
+
+    private Xirr(Collection<Transaction> txs, NewtonRaphson.Builder builder, Double guess, int daysInYear) {
         if (txs.size() < 2) {
             throw new IllegalArgumentException(
                 "Must have at least two transactions");
         }
+        if (daysInYear < 0) {
+            throw new IllegalArgumentException("Days in year must be positive: " + daysInYear);
+        }
+        this.daysInYear = daysInYear;
         details = txs.stream().collect(XirrDetails.collector());
         details.validate();
         investments = txs.stream()
@@ -109,7 +142,7 @@ public class Xirr {
         final Investment result = new Investment();
         result.amount = tx.amount;
         // Don't use YEARS.between() as it returns whole numbers
-        result.years = DAYS.between(tx.when, details.end) / DAYS_IN_YEAR;
+        result.years = DAYS.between(tx.when, details.end) / daysInYear;
         return result;
     }
 
@@ -145,7 +178,7 @@ public class Xirr {
      * @throws NonconvergenceException if the Newton-Raphson method fails to converge in the
      */
     public double xirr() {
-        final double years = DAYS.between(details.start, details.end) / DAYS_IN_YEAR;
+        final double years = DAYS.between(details.start, details.end) / daysInYear;
         if (details.maxAmount == 0) {
             return -1; // Total loss
         }
@@ -226,6 +259,8 @@ public class Xirr {
         private NewtonRaphson.Builder builder = null;
         private Double guess = null;
 
+        private int daysInYear = DEFAULT_DAYS_IN_YEAR;
+
         public Builder() {
         }
 
@@ -248,8 +283,13 @@ public class Xirr {
             return this;
         }
 
+        public Builder withDaysInYear(int daysInYear) {
+            this.daysInYear = daysInYear;
+            return this;
+        }
+
         public Xirr build() {
-            return new Xirr(transactions, builder, guess);
+            return new Xirr(transactions, builder, guess, daysInYear);
         }
 
         /**
