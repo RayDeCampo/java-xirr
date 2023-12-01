@@ -51,6 +51,19 @@ public class XirrBuilderTest {
     }
 
     @Test
+    public void withTransactions_1_year_decline_360days() {
+        // computes the negative xirr on 1 year decline of 10%
+        final double xirr = Xirr.builder()
+                .withTransactions(
+                        new Transaction(-1000, "2010-01-01"),
+                        new Transaction(  900, "2011-01-01")
+                )
+                .withDaysInYear(360)
+                .xirr();
+        assertEquals(-0.0987, xirr, TOLERANCE);
+    }
+
+    @Test
     public void withNewtonRaphsonBuilder() throws Exception {
         final double expected = 1;
 
