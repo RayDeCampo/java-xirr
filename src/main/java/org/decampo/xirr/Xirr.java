@@ -48,7 +48,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
  */
 public class Xirr {
 
-    private static final double DAYS_IN_YEAR = 365;
+    private static final double DAYS_IN_YEAR = 365.25;
 
     /**
      * Convenience method for getting an instance of a {@link Builder}.
