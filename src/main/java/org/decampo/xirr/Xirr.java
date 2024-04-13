@@ -122,7 +122,7 @@ public class Xirr {
             throw new IllegalArgumentException(
                 "Must have at least two transactions");
         }
-        if (daysInYear < 0) {
+        if (daysInYear <= 0) {
             throw new IllegalArgumentException("Days in year must be positive: " + daysInYear);
         }
         this.daysInYear = daysInYear;
