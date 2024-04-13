@@ -107,7 +107,7 @@ public class Xirr {
     /**
      * Construct an Xirr instance for the given transactions.
      * @param txs the transactions
-     * @daysInYear for use in calculations
+     * @param daysInYear for use in calculations
      * @throws IllegalArgumentException if there are fewer than 2 transactions
      * @throws IllegalArgumentException if all the transactions are on the same date
      * @throws IllegalArgumentException if all the transactions negative (deposits)
