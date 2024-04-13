@@ -180,6 +180,25 @@ public class XirrTest {
     }
 
     @Test
+    public void xirr_with360daysPerYear() {
+        double rate = new Xirr(
+                360,
+                new Transaction(-2610, "2001-06-22"),
+                new Transaction(-2589, "2001-07-03"),
+                new Transaction(-5110, "2001-07-05"),
+                new Transaction(-2550, "2001-07-06"),
+                new Transaction(-5086, "2001-07-09"),
+                new Transaction(-2561, "2001-07-10"),
+                new Transaction(-5040, "2001-07-12"),
+                new Transaction(-2552, "2001-07-13"),
+                new Transaction(-2530, "2001-07-16"),
+                new Transaction(-9840, "2001-07-17"),
+                new Transaction(38900, "2001-07-18")
+        ).xirr();
+        assertEquals(-0.8312209, rate, TOLERANCE);
+    }
+
+    @Test
     public void xirr_implementing_issue_23_is_impossible() {
         double xirr = new Xirr(
                 new Transaction(-2000, "2010-01-01"),
